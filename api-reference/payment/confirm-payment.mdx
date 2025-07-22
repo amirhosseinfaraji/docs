@@ -1,0 +1,14 @@
+---
+title: "Confirm Payment"
+openapi: "POST /api/v2/pub/orders/payment"
+---
+
+When the user returns from the payment gateway, backend returns the status inside the `queryParams` and check the payment status.
+If the status is successful, you need to complete the order.
+
+The `orderId` will be available in the query parameters of the redirected page URL, so use it to identify and finalize the order.
+
+<Warning>
+  This api is public and access token should not be included in the request
+  header.
+</Warning>

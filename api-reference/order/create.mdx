@@ -1,0 +1,6 @@
+---
+title: "Create Order"
+openapi: "POST /api/v2/orders"
+---
+
+Before a customer can check out, the items in their cart need to be turned into an order. To do this, just send the `basket id` in the request payload. The API will take everything in that cart, create an order from it, and move the process forward so the customer can complete their purchase.

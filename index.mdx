@@ -1,97 +1,158 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "Native App Handlers"
+description: ""
 ---
 
-## Setting up
+To communicate with the native application, you can use the following methods in your web application:
 
-Get your documentation site up and running in minutes.
+### Native Data
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
+<ParamField path="Param" type="(data: WebviewInputModel) => {}"></ParamField>
 
-## Make it yours
+```typescript Example.ts lines
+  getFlutterData(callback: (data: WebviewInputModel) => void) {
+    (window as SafeAny).receiveFromFlutter = (flutterData: string) => {
+      const data: WebviewInputModel = JSON.parse(flutterData);
+      callback(data);
+      localStorage.setItem('isWebview', 'true');
+      // and set other data to your stores
+    };
+  }
+```
 
-Design a docs site that looks great and empowers your users.
+##### Models
 
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
-  </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
-  </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
+<ParamField path="WebviewPlatform" type="Interface"></ParamField>
 
-## Create beautiful pages
+| Property     | Type            |
+| ------------ | --------------- |
+| route        | string          |
+| isDarkMode   | boolean         |
+| language     | string          |
+| platform     | WebviewPlatform |
+| accessToken  | string          |
+| refreshToken | string          |
 
-Everything you need to create world-class documentation.
+<ParamField path="platform" type="Enum"></ParamField>
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+| Key     | Value   |
+| ------- | ------- |
+| ANDROID | android |
+| IOS     | ios     |
 
-## Need inspiration?
+---
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+### Theme Switch
+
+<ParamField path="Param" type="theme: dark | light" required></ParamField>
+
+```typescript Example.ts lines
+switchTheme(theme: 'dark' | 'light') {
+    if (!this.isWebView()) return;
+    (window as SafeAny)?.darkModeHandler?.postMessage(theme);
+    (window as SafeAny)?.flutter_inappwebview?.callHandler(
+      'darkModeHandler',
+      theme,
+    );
+}
+```
+
+---
+
+### Native Logout
+
+```typescript Example.ts lines
+nativeLogout() {
+    if (!this.isWebView()) return;
+    (window as SafeAny)?.logoutHandler?.postMessage('');
+    (window as SafeAny)?.flutter_inappwebview?.callHandler(
+      'logoutHandler',
+      null,
+    );
+  }
+```
+
+---
+
+### Native Navigation
+
+<ParamField path="Param" type="url: string" required></ParamField>
+```typescript Example.ts lines
+  nativeCheckout(url: string) {
+    (window as SafeAny)?.checkoutHandler?.postMessage(url);
+    (window as SafeAny)?.flutter_inappwebview?.callHandler(
+      'checkoutHandler',
+      url,
+    );
+  }
+```
+---
+### Request Camera Permission
+
+```typescript Example.ts lines
+  getCameraPermission() {
+    if (!this.isWebView()) return;
+    (window as SafeAny)?.cameraPermissionHandler?.postMessage('');
+    (window as SafeAny)?.flutter_inappwebview?.callHandler(
+      'cameraPermissionHandler',
+      null,
+    );
+  }
+```
+
+---
+
+### Show Fingerprint
+
+```typescript Example.ts lines
+  showFingerprint() {
+    if (!this.isWebView()) return;
+    (window as SafeAny)?.showFingerprintHandler?.postMessage('');
+    (window as SafeAny)?.flutter_inappwebview?.callHandler(
+      'showFingerprintHandler',
+      null,
+    );
+  }
+```
+
+---
+
+### Set Language
+
+<ParamField path="Param" type="lang: string" required></ParamField>
+```typescript Example.ts lines
+  setLang(lang: string) {
+    if (!this.isWebView()) return;
+    (window as SafeAny)?.changeLanguageHandler?.postMessage(lang);
+    (window as SafeAny)?.flutter_inappwebview?.callHandler(
+      'changeLanguageHandler',
+      lang,
+    );
+  }
+```
+---
+
+### Get File
+
+<ParamField path="Param" type="config: FilePickerHandlerPayload"></ParamField>
+
+<ParamField path="Param" type="(file: File) => {}"></ParamField>
+
+```typescript Example.ts lines
+  getFile(config: FilePickerHandlerPayload, callback: (file: File) => void) {
+    if (!this.isWebView()) return;
+    const json = JSON.stringify(config);
+    (window as SafeAny)?.uploadPhotoHandler?.postMessage(json);
+    (window as SafeAny)?.flutter_inappwebview?.callHandler(
+      'uploadPhotoHandler',
+      json,
+    );
+    (window as SafeAny).onFlutterPhotoUpload = async (base64Image: string) => {
+      const file = await base64ToFile(
+        base64Image,
+        `${new Date().getTime()}.png`,
+      );
+      callback(file);
+    };
+  }
+```

@@ -1,0 +1,16 @@
+---
+title: "Wallet Charge"
+openapi: "POST /api/v2/wallet/payment"
+---
+
+To top up a user’s wallet, the process is similar to paying through a gateway:
+
+- Send the API payload to initiate the top-up.
+
+- Once the request is successful, the user will be redirected to the payment gateway.
+
+Key differences:
+
+- Instead of an `orderId`, include the user’s `walletId` in the details object.
+
+- You can also provide a `redirectUrl` so the user is sent to a specific page after they complete the payment details page.

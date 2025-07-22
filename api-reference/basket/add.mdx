@@ -1,0 +1,22 @@
+---
+title: "Add Item to Basket"
+openapi: "POST /api/v2/basket/item"
+---
+
+For adding item to basket you can use this api. `productId` and `quantity` are necessary for basket payload and `productDetails` is a map object that you can put any extra information related the product
+
+For example this is a an example payload for a specific product:
+
+```json example.json
+{
+  "productId": 4,
+  "quantity": 1,
+  "productDetails": {
+    "sku": "240EEBA9",
+    "region": "AT",
+    "currency": "EUR",
+    "credit": "20.00",
+    "email": "example@gmail.com"
+  }
+}
+```

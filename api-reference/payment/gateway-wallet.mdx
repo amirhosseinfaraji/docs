@@ -1,0 +1,8 @@
+---
+title: "Pay With Wallet"
+openapi: "POST /api/v2/auth/orders/payment"
+---
+
+Another way to complete the payment is by using the user’s wallet (if there’s enough balance).
+To do this, call the API below and include the `orderId` in the payload.
+The API will deduct the amount from the user’s wallet and mark the order as paid.

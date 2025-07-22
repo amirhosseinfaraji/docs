@@ -1,0 +1,58 @@
+---
+title: "Pay With Gateway"
+openapi: "POST /api/v2/wallet/payment"
+---
+
+Before you can pay for an order, you need to grab its details using the [Order Get Details](/api-reference/order/get) API.
+From the response, find the currencyId inside the currency object. You’ll use this ID to:
+
+- Fetch the user’s wallet for that currency. [See more](/api-reference/wallet/getByCurrency)
+
+- Get the list of available payment gateways that support that currency. [See more](/api-reference/gateway)
+
+Once you have the wallet and gateway data, you can build the payment payload and proceed with the payment.
+
+```json Example.json
+{
+  "amount": 0,
+  "gatewayName": "ZARINPAL",
+  "currencyId": 0,
+  "agent": "WEB",
+  "clientCallBackUrl": "string",
+  "clientCallbackDetails": {
+    "additionalProp1": {},
+    "additionalProp2": {},
+    "additionalProp3": {}
+  }
+}
+```
+
+<ParamField path="clientCallBackUrl" type="string" required>
+  `clientCallBackUrl` is the link to the payment details page after the gateway,
+  which is redirected to this page on the frontend by the backend. the path is:
+  `${origin}/app/payment-callback`
+</ParamField>
+
+<Warning>This field is fixed and should not be changed.</Warning>
+
+---
+
+<ParamField path="clientCallbackDetails" type="Record<string , any>" required>
+This object lets you pass extra information to the payment details page. Everything inside this object gets added as query parameters to the page URL when the user is redirected from the portal.
+  
+Some fields are required:
+- `language` – the application language
+- `agent` – the user environment (web or native)
+- `orderId` – the order identifier
+You can also add other optional fields as needed.
+
+<Warning>
+  Note that the `agent` field must be included in this object in addition to the
+  root object to return the user to the native application using a deep link.
+</Warning>
+
+</ParamField>
+
+<ParamField path="Response" type="string" required>
+  `paymentUrl` is the gateway url that you should redirect user to the link
+</ParamField>
